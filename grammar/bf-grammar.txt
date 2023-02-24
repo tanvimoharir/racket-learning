@@ -1,0 +1,5 @@
+#defining production rules for grammar for weird bf language
+
+bf-program : (bf-op | bf-loop)*
+bf-op      : "<" | ">" | "+" | "-" | "." | ","
+bf-loop    : "[" bf-program "]"
