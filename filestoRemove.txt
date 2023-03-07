@@ -1,0 +1,7 @@
+./grammar/hello.rkt~
+./grammar/reader.rkt~
+./grammar/expander.rkt~
+./grammar/parser.rkt~
+./grammar/parser-tester.rkt~
+./grammar/atsign.rkt~
+./stackerize/stackerizer-test.rkt~

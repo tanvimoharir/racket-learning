@@ -1,0 +1,1 @@
+("8.8" tarm64osx ("10c2cb1e720f4a0d48adab1afb7934ef3c4d74a3" . "522150872aee606a5b51189112c56732f9080718") #"/Users/tanvimoharir/Git/racket-learning/grammar/parser.rkt" (collects #"br" #"quicklang.rkt") (collects #"brag" #"support.rkt") (collects #"drracket" #"private" #"drracket-errortrace-key.rkt") (collects #"racket" #"runtime-config.rkt"))
