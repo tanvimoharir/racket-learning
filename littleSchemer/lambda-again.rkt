@@ -151,6 +151,10 @@
   (lambda (x y)
     (null? y)))
 
+(define last-friend
+  (lambda (x y)
+    (length x)))
+
 (define mrember&co
   (lambda (a lat col)
     (cond
@@ -163,3 +167,91 @@
                         (lambda (newlat seen)
                           (col (cons (car lat) newlat) seen)))])))
 
+;combining multiinsert left and right
+(define minsertLR
+  (lambda (new oldL oldR lat)
+    (cond
+      [(null? lat) (quote())]
+      [(eq? (car lat) oldL)
+       (cons new (cons oldL (minsertLR new oldL oldR (cdr lat))))]
+      [(eq? (car lat) oldR)
+       (cons oldR (cons new (minsertLR new oldL oldR (cdr lat))))]
+      [else (cons (car lat) (minsertLR new oldL oldR (cdr lat)))])))
+
+; writing minsert with collector
+
+(define minsertLR&co
+  (lambda (new oldL oldR lat col)
+    (cond
+      [(null? lat) (col (quote()) 0 0)]
+      [(eq? (car lat) oldL)
+       (cons new
+             (cons oldL
+                   (minsertLR&co new oldL oldR (cdr lat)
+                                 (lambda (newlat L R)
+                                   (col (cons new (cons oldL newlat))
+                                        (add1 L) R)))))]
+      [(eq? (car lat) oldR)
+       (cons oldR
+             (cons new
+                   (minsertLR&co new oldL oldR (cdr lat)
+                                 (lambda (newlat L R)
+                                   (col (cons oldR (cons new newlat))
+                                        L (add1 R))))))]
+      [else
+       (cons (car lat)
+             (minsertLR&co new oldL oldR (cdr lat)
+                           (lambda (newlat L R)
+                             (col (cons (car lat) newlat) L R))))])))
+
+(define last-friend2
+  (lambda (x y z)
+    (length x)))
+
+(define even?
+  (lambda (n)
+    (eq? 0 (remainder n 2))))
+
+(define evens-only*
+  (lambda (lat)
+    (cond
+      [(null? lat) (quote())]
+      [(atom? (car lat))
+       (cond
+         [(even? (car lat)) (cons (car lat) (evens-only* (cdr lat)))]
+         [else (evens-only* (cdr lat))])]
+      [else (cons (evens-only* (car lat)) (evens-only* (cdr lat)))])))
+
+;evens only with collector
+
+(define evens-only*&co
+  (lambda (lat col)
+    (cond
+      [(null? lat) (col '() 0 1)]
+      [(atom? (car lat))
+       (cond
+         [(even? (car lat))
+          (evens-only*&co (cdr lat)
+                          (lambda (newlat sum pro)
+                            (col (cons (car lat) newlat)
+                                       sum
+                                       (* (car lat)pro))))]
+         [else (evens-only*&co (cdr lat)
+                               (lambda (newlat sum pro)
+                                 (col newlat (+ (car lat) sum)
+                                      pro)))])]
+      [else
+        (evens-only*&co (car lat)
+                         (lambda (al as ap)
+                          (evens-only*&co (cdr lat)
+                                          (lambda (dl ds dp)
+                                            (col (cons al dl)
+                                                 (+ as ds)
+                                                 (* ap dp))))))])))
+
+(define the-last-friend
+  (lambda (newlat sum product)
+    (cons product
+          (cons sum newlat))))
+
+(define l '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
