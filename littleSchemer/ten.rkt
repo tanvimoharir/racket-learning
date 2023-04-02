@@ -63,16 +63,16 @@
 (define rep-car 'car)
 (define rep-quote 'quote)
 
-(define e
-  (cons rep-car
-      (cons (cons rep-quote
-                  (cons
-                   (cons rep-a
-                         (cons rep-b
-                               (cons rep-c
-                                     (quote()))))
-                   (quote())))
-            (quote()))))
+;(define e
+;  (cons rep-car
+;      (cons (cons rep-quote
+;                  (cons
+;                   (cons rep-a
+;                         (cons rep-b
+;                               (cons rep-c
+;                                     (quote()))))
+;                   (quote())))
+;            (quote()))))
 
 (define atom?
   (lambda (x)
@@ -175,3 +175,67 @@
 (define initial-table
   (lambda (name)
     (car (quote()))))
+
+(define *lambda
+  (lambda (e table)
+    (build (quote non-primitive)
+           (cons table (cdr e)))))
+
+(define table-of first)
+(define formals-of second)
+(define body-of third)
+
+(define evcon
+  (lambda (lines table)
+    (cond
+      [(else? (question-of (car lines)))]
+      [(meaning (answer-of (car lines)) table)]
+      [(meaning (question-of (car lines)) table)]
+      [(meaning (answer-of (car lines)) table)]
+      [else (evcon (cdr lines) table)])))
+
+(define else?
+  (lambda (x)
+    (cond
+      [(atom? x) (eq? x (quote else))]
+      [else #f])))
+
+(define question-of first)
+(define answer-of second)
+
+(define *cond
+  (lambda (e table)
+    (evcon (cond-lines-of e) table)))
+
+(define cond-lines-of cdr)
+
+(define evlis
+  (lambda (args table)
+    (cond
+      [(null? args) (quote())]
+      [else
+       (cons (meaning (car args) table)
+             (evlis (cdr args) table))])))
+
+(define *application
+  (lambda (e table)
+    (apply
+     (meaning (function-of e) table)
+     (evlis (arguments-of e) table))))
+
+(define function-of car)
+(define arguments-of cdr)
+
+(define t '(((coffee) (#t))
+                ((klatsch party) (5 (6)))))
+(define e '(cond (coffee klatsch) (else party)))
+
+(define primitive?
+  (lambda (l)
+    (eq? (first l) (quote primitive))))
+
+(define non-primitive?
+  (lambda (l)
+    (eq? (first l) (quote non-primitive))))
+
+;dont know
